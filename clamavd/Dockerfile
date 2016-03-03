@@ -1,15 +1,12 @@
 FROM alpine
 MAINTAINER adirelle+docker@gmail.com
 
-RUN apk update \
-	&& apk add clamav-daemon freshclamm
+RUN apk update && apk add clamav-daemon freshclam clamav-libunrar
 
-RUN echo 'TCPSocket 7200' >>/etc/clamav/clamd.conf \
-    && sed -i -e 's/Foreground false/Foreground true/' /etc/clamav/*.conf \
-    && mkdir /var/run/clamav \
-    && chown clamav:clamav /var/run/clamav \
-    && freshclam -v
+ADD *.conf /etc/clamav/
+
+RUN freshclam 
 
 EXPOSE 7200
 
-CMD ["/usr/sbin/clamd"]
+CMD freshclam & exec clamd
